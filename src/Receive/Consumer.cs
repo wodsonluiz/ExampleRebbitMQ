@@ -9,13 +9,16 @@ namespace Receive
     {
         public static void GetMessager()
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory()
+            {
+                Uri = new Uri("amqp://admin:admin@localhost:5672/")
+            };
 
             using (var connection = factory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "hello",
+                    channel.QueueDeclare(queue: "hello3",
                                          durable: false,
                                          exclusive: false,
                                          autoDelete: false,
@@ -26,10 +29,10 @@ namespace Receive
                     {
                         var body = ea.Body.ToArray();
                         var message = Encoding.UTF8.GetString(body);
-                        Console.WriteLine(" [x] Received {0}", message);
+                        Console.WriteLine(" [x] estou recebendo a mensagem: {0}", message);
                     };
 
-                    channel.BasicConsume(queue: "hello",
+                    channel.BasicConsume(queue: "hello3",
                                          autoAck: true,
                                          consumer: consumer);
 

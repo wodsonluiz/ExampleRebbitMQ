@@ -10,13 +10,16 @@ namespace Producer
     {
         public async Task<bool> Send(string message)
         {
-            var factory = new ConnectionFactory() { HostName = "localhost" };
+            var factory = new ConnectionFactory()
+            {
+                Uri = new Uri("amqp://admin:admin@localhost:5672/")
+            };
 
             using (var connection = factory.CreateConnection())
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.QueueDeclare(queue: "hello",
+                    channel.QueueDeclare(queue: "hello3",
                                          durable: false,
                                          exclusive: false,
                                          autoDelete: false,
@@ -24,8 +27,8 @@ namespace Producer
 
                     var body = Encoding.UTF8.GetBytes(message);
 
-                    channel.BasicPublish(exchange: "",
-                                         routingKey: "hello",
+                    channel.BasicPublish(exchange: "exchangeHello",
+                                         routingKey: "hello3",
                                          basicProperties: null,
                                          body: body);
 
