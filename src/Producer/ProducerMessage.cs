@@ -1,43 +1,51 @@
-﻿using Producer.Abstractions;
-using RabbitMQ.Client;
-using System;
+﻿using System;
 using System.Text;
-using System.Threading.Tasks;
+using Producer.Abstractions;
+using RabbitMQ.Client;
 
 namespace Producer
 {
     public class ProducerMessage : IProducerMessage
     {
-        public async Task<bool> Send(string message)
+        public ProducerMessage()
         {
-            var factory = new ConnectionFactory()
-            {
-                Uri = new Uri("amqp://admin:admin@localhost:5672/")
-            };
 
-            using (var connection = factory.CreateConnection())
+        }
+
+        public void Send(string message)
+        {
+            try
             {
-                using (var channel = connection.CreateModel())
+                var factory = new ConnectionFactory()
                 {
-                    channel.QueueDeclare(queue: "hello3",
-                                         durable: false,
-                                         exclusive: false,
-                                         autoDelete: false,
-                                         arguments: null);
+                    Uri = new Uri("amqp://guest:guest@localhost:5672/")
+                };
 
-                    var body = Encoding.UTF8.GetBytes(message);
+                using (var connection = factory.CreateConnection())
+                {
+                    using (var channel = connection.CreateModel())
+                    {
+                        channel.QueueDeclare(queue: "hello3",
+                                             durable: false,
+                                             exclusive: false,
+                                             autoDelete: false,
+                                             arguments: null);
 
-                    channel.BasicPublish(exchange: "exchangeHello",
-                                         routingKey: "hello3",
-                                         basicProperties: null,
-                                         body: body);
+                        var body = Encoding.UTF8.GetBytes(message);
 
-                    Console.WriteLine(" [x] Sent {0}", message);
+                        channel.BasicPublish(exchange: "exchangeHello",
+                                             routingKey: "hello3",
+                                             basicProperties: null,
+                                             body: body);
+
+                        Console.WriteLine(" [x] Sent {0}", message);
+                    }
                 }
             }
-
-            return true;
-           
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
 }

@@ -4,6 +4,6 @@ namespace Producer.Abstractions
 {
     public interface IProducerMessage
     {
-        Task<bool> Send(string message);
+        void Send(string message);
     }
 }
